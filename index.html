@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stop Here — Trading Tracker</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
+
+:root {
+  --bg: #0a0a0a;
+  --surface: #111111;
+  --surface2: #181818;
+  --border: #1e1e1e;
+  --green: #00ff87;
+  --green-dim: #00ff8718;
+  --green-mid: #00cc6a;
+  --red: #ff4444;
+  --red-dim: #ff444418;
+  --gold: #ffd700;
+  --gold-dim: #ffd70015;
+  --blue: #4da6ff;
+  --blue-dim: #4da6ff15;
+  --text: #f0f0f0;
+  --muted: #555;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Space Mono', monospace;
+  min-height: 100vh;
+  padding: 32px 20px 60px;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background:
+    radial-gradient(ellipse at 25% 15%, #00ff8706 0%, transparent 50%),
+    radial-gradient(ellipse at 75% 85%, #00cc6a04 0%, transparent 50%);
+  pointer-events: none; z-index: 0;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── HEADER ── */
+header {
+  margin-bottom: 40px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(32px, 6vw, 56px);
+  font-weight: 800;
+  line-height: 1;
+}
+
+h1 span { color: var(--green); }
+
+.subtitle {
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.8;
+  max-width: 500px;
+}
+
+/* ── SECTION TITLES ── */
+.section-title {
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── CONTROLS ── */
+.controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.control-group {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 18px;
+}
+
+.control-group label {
+  display: block;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.control-group input[type="number"] {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--green);
+  color: var(--green);
+  font-family: 'Space Mono', monospace;
+  font-size: 24px;
+  font-weight: 700;
+  padding: 4px 0;
+  outline: none;
+}
+
+.range-val {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--green);
+  display: block;
+  margin-bottom: 6px;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--border);
+  outline: none;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px #00ff8755;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+/* ── STAT CARDS ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 20px 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--green);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+
+.stat-card:hover::after { transform: scaleX(1); }
+
+.stat-label {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.stat-value {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 800;
+  color: var(--green);
+  line-height: 1;
+}
+
+.stat-value.gold { color: var(--gold); }
+.stat-value.red  { color: var(--red); }
+
+.stat-sub {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 5px;
+}
+
+/* ── RULE BOX ── */
+.rule-box {
+  border: 1px solid var(--green);
+  background: var(--green-dim);
+  padding: 22px 26px;
+  margin-bottom: 28px;
+  position: relative;
+}
+
+.rule-box::before {
+  content: 'THE RULE';
+  position: absolute;
+  top: -8px; left: 18px;
+  background: var(--bg);
+  padding: 0 8px;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--green);
+}
+
+.rule-text {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(16px, 2.5vw, 22px);
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.rule-text span { color: var(--green); }
+
+.rule-sub {
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.9;
+}
+
+/* ── CHART ── */
+.chart-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 22px;
+  margin-bottom: 28px;
+}
+
+.chart-title {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
+canvas { width: 100% !important; }
+
+/* ── TABLE ── */
+.table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  margin-bottom: 40px;
+}
+
+.table-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.table-header h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.badge {
+  font-size: 9px;
+  letter-spacing: 2px;
+  padding: 4px 10px;
+  border: 1px solid var(--green);
+  color: var(--green);
+  text-transform: uppercase;
+}
+
+table { width: 100%; border-collapse: collapse; }
+
+thead th {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  text-transform: uppercase;
+  text-align: left;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+thead th:not(:first-child) { text-align: right; }
+
+tbody tr {
+  border-bottom: 1px solid #161616;
+  transition: background 0.15s;
+}
+
+tbody tr:hover { background: #161616; }
+tbody tr.milestone { background: var(--gold-dim); }
+tbody tr.milestone:hover { background: #ffd70022; }
+
+td {
+  padding: 10px 16px;
+  font-size: 12px;
+}
+
+td:not(:first-child) { text-align: right; }
+td.day-num { color: var(--muted); font-size: 11px; }
+td.start { color: var(--text); }
+td.profit { color: var(--green); font-weight: 700; }
+td.total-gain { color: var(--green-mid); }
+td.milestone-tag { color: var(--gold); font-size: 10px; letter-spacing: 1px; }
+
+/* ══════════════════════════════
+   CALENDAR LOG SECTION
+══════════════════════════════ */
+.calendar-section {
+  margin-bottom: 40px;
+}
+
+/* Month nav */
+.cal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.cal-month-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.cal-nav-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'Space Mono', monospace;
+  font-size: 16px;
+  width: 36px; height: 36px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.cal-nav-btn:hover { border-color: var(--green); color: var(--green); }
+
+/* Calendar grid */
+.cal-grid-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.cal-day-headers {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 8px;
+}
+
+.cal-day-header {
+  text-align: center;
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: var(--muted);
+  text-transform: uppercase;
+  padding: 4px 0;
+}
+
+.cal-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.cal-cell {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.15s, background 0.15s;
+  min-height: 44px;
+}
+
+.cal-cell:hover:not(.cal-empty) { border-color: var(--border); }
+.cal-cell.cal-empty { cursor: default; }
+.cal-cell.cal-today { border-color: var(--green) !important; }
+
+.cal-cell.has-win    { background: var(--green-dim); }
+.cal-cell.has-loss   { background: var(--red-dim); }
+.cal-cell.has-honor  { background: var(--gold-dim); }
+.cal-cell.has-skip   { background: var(--blue-dim); }
+
+.cal-date-num {
+  font-size: 12px;
+  color: var(--text);
+  line-height: 1;
+}
+
+.cal-cell.cal-empty .cal-date-num { color: var(--border); }
+
+.cal-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  margin-top: 3px;
+}
+
+.cal-cell.has-win  .cal-dot { background: var(--green); }
+.cal-cell.has-loss .cal-dot { background: var(--red); }
+.cal-cell.has-honor .cal-dot { background: var(--gold); }
+.cal-cell.has-skip  .cal-dot { background: var(--blue); }
+
+/* Legend */
+.cal-legend {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+
+.legend-swatch {
+  width: 12px; height: 12px;
+  border-radius: 2px;
+}
+
+.legend-swatch.win   { background: var(--green); }
+.legend-swatch.loss  { background: var(--red); }
+.legend-swatch.honor { background: var(--gold); }
+.legend-swatch.skip  { background: var(--blue); }
+
+/* Log modal overlay */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #000000cc;
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 28px;
+  width: 100%;
+  max-width: 440px;
+  position: relative;
+  animation: modalIn 0.2s ease;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.modal-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.modal-date {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 20px;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.modal-close:hover { color: var(--text); }
+
+.field-label {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.field-input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'Space Mono', monospace;
+  font-size: 18px;
+  padding: 12px 14px;
+  outline: none;
+  margin-bottom: 18px;
+  transition: border-color 0.2s;
+}
+
+.field-input:focus { border-color: var(--green); }
+
+.outcome-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+
+.outcome-btn {
+  padding: 14px 10px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--muted);
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+}
+
+.outcome-btn:hover { border-color: var(--text); color: var(--text); }
+.outcome-btn.sel-win   { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+.outcome-btn.sel-loss  { border-color: var(--red);   color: var(--red);   background: var(--red-dim);   }
+.outcome-btn.sel-honor { border-color: var(--gold);  color: var(--gold);  background: var(--gold-dim);  }
+.outcome-btn.sel-skip  { border-color: var(--blue);  color: var(--blue);  background: var(--blue-dim);  }
+
+.modal-footer {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-save {
+  flex: 1;
+  background: var(--green);
+  color: #000;
+  border: none;
+  font-family: 'Space Mono', monospace;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 1px;
+  padding: 14px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.btn-save:hover { opacity: 0.85; }
+
+.btn-delete {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--red);
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.btn-delete:hover { border-color: var(--red); }
+
+/* ── STREAK / SUMMARY STATS ── */
+.summary-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+/* Recent log list */
+.log-list {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.log-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  border-bottom: 1px solid #161616;
+  font-size: 12px;
+  transition: background 0.1s;
+}
+
+.log-item:hover { background: #161616; }
+.log-item:last-child { border-bottom: none; }
+
+.log-item-date { color: var(--muted); font-size: 11px; min-width: 80px; }
+.log-item-pnl  { font-weight: 700; }
+.log-item-pnl.pos { color: var(--green); }
+.log-item-pnl.neg { color: var(--red); }
+
+.log-item-badge {
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  padding: 3px 8px;
+  border: 1px solid;
+  text-transform: uppercase;
+}
+
+.log-item-badge.win   { border-color: var(--green); color: var(--green); }
+.log-item-badge.loss  { border-color: var(--red);   color: var(--red);   }
+.log-item-badge.honor { border-color: var(--gold);  color: var(--gold);  }
+.log-item-badge.skip  { border-color: var(--blue);  color: var(--blue);  }
+
+.empty-log {
+  padding: 32px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+@media (max-width: 500px) {
+  thead th:nth-child(4), td:nth-child(4) { display: none; }
+  .outcome-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- HEADER -->
+<header>
+  <div class="eyebrow">Options Trading — Discipline Tool</div>
+  <h1>Daily <span>Stop</span> Target</h1>
+  <p class="subtitle">Set your number before the market opens. Hit it. Walk away. This is what it builds over time.</p>
+</header>
+
+<!-- ══ SECTION 1: CONTROLS + TARGETS ══ -->
+<div class="section-title">Target Calculator</div>
+
+<div class="controls">
+  <div class="control-group">
+    <label>Starting Balance ($)</label>
+    <input type="number" id="startBalance" value="100" min="1" step="1">
+  </div>
+  <div class="control-group">
+    <label>Daily Profit Target</label>
+    <span class="range-val" id="pctDisplay">50%</span>
+    <input type="range" id="profitPct" min="10" max="100" value="50" step="5">
+  </div>
+  <div class="control-group">
+    <label>Days to Project</label>
+    <span class="range-val" id="daysDisplay">30</span>
+    <input type="range" id="numDays" min="5" max="60" value="30" step="5">
+  </div>
+</div>
+
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="stat-label">Stop Trading At</div>
+    <div class="stat-value" id="todayStop">—</div>
+    <div class="stat-sub">today's hard limit</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Pocket Today</div>
+    <div class="stat-value" id="todayProfit">—</div>
+    <div class="stat-sub">walk away with this</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">End of Period</div>
+    <div class="stat-value gold" id="endBalance">—</div>
+    <div class="stat-sub">if rule is honored</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Total Gain</div>
+    <div class="stat-value gold" id="totalGain">—</div>
+    <div class="stat-sub">from $<span id="startRef">100</span></div>
+  </div>
+</div>
+
+<div class="rule-box">
+  <div class="rule-text">
+    Hit <span id="ruleNum">$150</span>. Close the platform. <span>You're done.</span>
+  </div>
+  <div class="rule-sub">
+    The decision is made before the market opens — not in the moment.<br>
+    That question of "should I keep going?" no longer exists.
+  </div>
+</div>
+
+<!-- ══ SECTION 2: GROWTH CHART ══ -->
+<div class="section-title">Growth Chart</div>
+
+<div class="chart-wrap">
+  <div class="chart-title">Balance Compounding — Honoring The Rule Every Day</div>
+  <canvas id="growthChart" height="220"></canvas>
+</div>
+
+<!-- ══ SECTION 3: DAY TABLE ══ -->
+<div class="section-title">Day-by-Day Breakdown</div>
+
+<div class="table-wrap">
+  <div class="table-header">
+    <h2>Stop Target Per Day</h2>
+    <div class="badge">Compounding</div>
+  </div>
+  <div style="overflow-x:auto;">
+    <table>
+      <thead>
+        <tr>
+          <th>Day</th>
+          <th>Start</th>
+          <th>Stop At</th>
+          <th>Daily Profit</th>
+          <th>Total Gain</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ SECTION 4: CALENDAR LOG ══ -->
+<div class="section-title">Daily Trade Log</div>
+
+<div class="calendar-section">
+
+  <!-- Summary stats -->
+  <div class="summary-row">
+    <div class="stat-card">
+      <div class="stat-label">Current Streak</div>
+      <div class="stat-value gold" id="streakVal">0</div>
+      <div class="stat-sub">days honored</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Wins</div>
+      <div class="stat-value" id="winsVal">0</div>
+      <div class="stat-sub">profitable days</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Losses</div>
+      <div class="stat-value red" id="lossesVal">0</div>
+      <div class="stat-sub">days in red</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Net P&L Logged</div>
+      <div class="stat-value" id="netPnl">$0</div>
+      <div class="stat-sub">all recorded days</div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="cal-legend">
+    <div class="legend-item"><div class="legend-swatch win"></div> Win</div>
+    <div class="legend-item"><div class="legend-swatch honor"></div> Honored Rule</div>
+    <div class="legend-item"><div class="legend-swatch loss"></div> Loss / Went Back In</div>
+    <div class="legend-item"><div class="legend-swatch skip"></div> Skipped / Rest Day</div>
+  </div>
+
+  <!-- Month nav -->
+  <div class="cal-nav">
+    <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
+    <div class="cal-month-label" id="calMonthLabel">—</div>
+    <button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
+  </div>
+
+  <!-- Calendar -->
+  <div class="cal-grid-wrap">
+    <div class="cal-day-headers">
+      <div class="cal-day-header">Sun</div>
+      <div class="cal-day-header">Mon</div>
+      <div class="cal-day-header">Tue</div>
+      <div class="cal-day-header">Wed</div>
+      <div class="cal-day-header">Thu</div>
+      <div class="cal-day-header">Fri</div>
+      <div class="cal-day-header">Sat</div>
+    </div>
+    <div class="cal-days" id="calDays"></div>
+  </div>
+
+  <!-- Recent log -->
+  <div class="section-title" style="margin-top:8px;">Recent Entries</div>
+  <div class="log-list" id="logList">
+    <div class="empty-log">No entries yet.<br>Click any day on the calendar to log a trade.</div>
+  </div>
+
+</div>
+
+</div><!-- /container -->
+
+<!-- ══ LOG MODAL ══ -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-title" id="modalTitle">Log Day</div>
+    <div class="modal-date" id="modalDateLabel">—</div>
+
+    <div class="field-label">Starting Balance ($)</div>
+    <input class="field-input" type="number" id="mStart" inputmode="decimal" placeholder="100">
+
+    <div class="field-label">Ending Balance ($)</div>
+    <input class="field-input" type="number" id="mEnd" inputmode="decimal" placeholder="150">
+
+    <div class="field-label" style="margin-bottom:8px;">Outcome</div>
+    <div class="outcome-grid">
+      <button class="outcome-btn" id="ob-win"   onclick="selOutcome('win')">✅ WIN</button>
+      <button class="outcome-btn" id="ob-honor" onclick="selOutcome('honor')">🏆 HONORED RULE</button>
+      <button class="outcome-btn" id="ob-loss"  onclick="selOutcome('loss')">❌ LOSS</button>
+      <button class="outcome-btn" id="ob-skip"  onclick="selOutcome('skip')">🔵 REST DAY</button>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-save" onclick="saveEntry()">Save Entry</button>
+      <button class="btn-delete" id="btnDelete" onclick="deleteEntry()" style="display:none;">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+// ══════════════════════════════
+//  STATE
+// ══════════════════════════════
+let logs = JSON.parse(localStorage.getItem('tradelogs_v2') || '{}');
+// logs = { 'YYYY-MM-DD': { start, end, pnl, outcome } }
+
+let calYear, calMonth;
+const now = new Date();
+calYear  = now.getFullYear();
+calMonth = now.getMonth(); // 0-indexed
+
+let activeDate = null;
+let activeOutcome = null;
+let chart = null;
+
+// ══════════════════════════════
+//  UTILS
+// ══════════════════════════════
+function fmt(n) {
+  return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function fmtDate(dateStr) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const dt = new Date(y, m - 1, d);
+  return dt.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function todayStr() {
+  return now.toISOString().split('T')[0];
+}
+
+function saveLogs() {
+  localStorage.setItem('tradelogs_v2', JSON.stringify(logs));
+}
+
+// ══════════════════════════════
+//  CALCULATOR
+// ══════════════════════════════
+function milestones(balance, start, pct) {
+  const multiples = [2, 5, 10, 25, 50, 100];
+  for (const m of multiples) {
+    if (Math.abs(balance - start * m) < start * (pct / 100) * 1.5) return m + 'x';
+  }
+  return null;
+}
+
+function updateCalc() {
+  const start = parseFloat(document.getElementById('startBalance').value) || 100;
+  const pct   = parseFloat(document.getElementById('profitPct').value) / 100;
+  const days  = parseInt(document.getElementById('numDays').value);
+
+  document.getElementById('pctDisplay').textContent  = Math.round(pct * 100) + '%';
+  document.getElementById('daysDisplay').textContent = days;
+
+  let balance = start;
+  const balances = [start];
+  const labels   = ['Start'];
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+
+  for (let d = 1; d <= days; d++) {
+    const profit     = balance * pct;
+    const newBalance = balance + profit;
+    const totalGain  = newBalance - start;
+    const ms = milestones(newBalance, start, pct * 100);
+
+    labels.push('D' + d);
+    balances.push(newBalance);
+
+    const tr = document.createElement('tr');
+    if (ms) tr.classList.add('milestone');
+    tr.innerHTML = `
+      <td class="day-num">Day ${d}</td>
+      <td class="start">${fmt(balance)}</td>
+      <td class="profit">${fmt(newBalance)}</td>
+      <td class="total-gain">+${fmt(profit)}</td>
+      <td class="milestone-tag">${ms ? '🏆 ' + ms : fmt(totalGain)}</td>
+    `;
+    tbody.appendChild(tr);
+    balance = newBalance;
+  }
+
+  const startProfit = start * pct;
+  const startStop   = start + startProfit;
+  document.getElementById('todayStop').textContent   = fmt(startStop);
+  document.getElementById('todayProfit').textContent = '+' + fmt(startProfit);
+  document.getElementById('endBalance').textContent  = fmt(balance);
+  document.getElementById('totalGain').textContent   = '+' + fmt(balance - start);
+  document.getElementById('startRef').textContent    = start.toFixed(2);
+  document.getElementById('ruleNum').textContent     = fmt(startStop);
+
+  // Chart
+  if (chart) chart.destroy();
+  const ctx = document.getElementById('growthChart').getContext('2d');
+  const grad = ctx.createLinearGradient(0, 0, 0, 240);
+  grad.addColorStop(0, '#00ff8730');
+  grad.addColorStop(1, '#00ff8700');
+
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        data: balances,
+        borderColor: '#00ff87',
+        borderWidth: 2,
+        backgroundColor: grad,
+        fill: true,
+        pointRadius: balances.map((_, i) => i === 0 || i === balances.length - 1 ? 5 : 2),
+        pointBackgroundColor: '#00ff87',
+        tension: 0.4,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#111',
+          borderColor: '#00ff87',
+          borderWidth: 1,
+          titleColor: '#555',
+          bodyColor: '#00ff87',
+          bodyFont: { family: 'Space Mono', size: 13, weight: 'bold' },
+          callbacks: { label: c => ' ' + fmt(c.raw) }
+        }
+      },
+      scales: {
+        x: { ticks: { color: '#444', font: { family: 'Space Mono', size: 10 }, maxTicksLimit: 10 }, grid: { color: '#161616' } },
+        y: { ticks: { color: '#444', font: { family: 'Space Mono', size: 10 }, callback: v => '$' + v.toLocaleString() }, grid: { color: '#161616' } }
+      }
+    }
+  });
+}
+
+document.getElementById('startBalance').addEventListener('input', updateCalc);
+document.getElementById('profitPct').addEventListener('input', updateCalc);
+document.getElementById('numDays').addEventListener('input', updateCalc);
+
+// ══════════════════════════════
+//  CALENDAR
+// ══════════════════════════════
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function changeMonth(delta) {
+  calMonth += delta;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  if (calMonth < 0)  { calMonth = 11; calYear--; }
+  renderCalendar();
+}
+
+function renderCalendar() {
+  document.getElementById('calMonthLabel').textContent = MONTHS[calMonth] + ' ' + calYear;
+
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const today = todayStr();
+
+  const grid = document.getElementById('calDays');
+  grid.innerHTML = '';
+
+  // Empty cells before first day
+  for (let i = 0; i < firstDay; i++) {
+    const el = document.createElement('div');
+    el.className = 'cal-cell cal-empty';
+    grid.appendChild(el);
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${calYear}-${String(calMonth + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const entry = logs[dateStr];
+    const isToday = dateStr === today;
+
+    const cell = document.createElement('div');
+    cell.className = 'cal-cell' + (isToday ? ' cal-today' : '');
+    if (entry) cell.classList.add('has-' + entry.outcome);
+
+    cell.innerHTML = `<div class="cal-date-num">${d}</div>${entry ? '<div class="cal-dot"></div>' : ''}`;
+    cell.onclick = () => openModal(dateStr);
+    grid.appendChild(cell);
+  }
+}
+
+// ══════════════════════════════
+//  MODAL
+// ══════════════════════════════
+function openModal(dateStr) {
+  activeDate = dateStr;
+  activeOutcome = null;
+
+  document.getElementById('modalTitle').textContent    = 'Log Day';
+  document.getElementById('modalDateLabel').textContent = fmtDate(dateStr);
+  document.getElementById('mStart').value = document.getElementById('startBalance').value || 100;
+  document.getElementById('mEnd').value   = '';
+
+  // Reset outcome buttons
+  ['win','honor','loss','skip'].forEach(o => {
+    document.getElementById('ob-' + o).className = 'outcome-btn';
+  });
+
+  const existing = logs[dateStr];
+  if (existing) {
+    document.getElementById('mStart').value = existing.start;
+    document.getElementById('mEnd').value   = existing.end;
+    selOutcome(existing.outcome);
+    document.getElementById('btnDelete').style.display = 'block';
+  } else {
+    document.getElementById('btnDelete').style.display = 'none';
+  }
+
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  activeDate = null;
+}
+
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+function selOutcome(o) {
+  activeOutcome = o;
+  ['win','honor','loss','skip'].forEach(id => {
+    document.getElementById('ob-' + id).className = 'outcome-btn' + (id === o ? ' sel-' + id : '');
+  });
+}
+
+function saveEntry() {
+  if (!activeDate || !activeOutcome) {
+    alert('Please select an outcome.');
+    return;
+  }
+
+  const start = parseFloat(document.getElementById('mStart').value) || 0;
+  const end   = parseFloat(document.getElementById('mEnd').value)   || 0;
+
+  logs[activeDate] = {
+    start,
+    end,
+    pnl: end - start,
+    outcome: activeOutcome
+  };
+
+  saveLogs();
+  closeModal();
+  renderCalendar();
+  renderSummary();
+  renderLogList();
+}
+
+function deleteEntry() {
+  if (!activeDate) return;
+  delete logs[activeDate];
+  saveLogs();
+  closeModal();
+  renderCalendar();
+  renderSummary();
+  renderLogList();
+}
+
+// ══════════════════════════════
+//  SUMMARY + LOG LIST
+// ══════════════════════════════
+function calcStreak() {
+  let streak = 0;
+  const today = todayStr();
+  const d = new Date();
+
+  for (let i = 0; i < 365; i++) {
+    const key = d.toISOString().split('T')[0];
+    const entry = logs[key];
+    if (entry && (entry.outcome === 'win' || entry.outcome === 'honor')) {
+      streak++;
+    } else if (i > 0) {
+      break;
+    }
+    d.setDate(d.getDate() - 1);
+  }
+  return streak;
+}
+
+function renderSummary() {
+  const entries = Object.values(logs);
+  const wins    = entries.filter(e => e.outcome === 'win').length;
+  const honors  = entries.filter(e => e.outcome === 'honor').length;
+  const losses  = entries.filter(e => e.outcome === 'loss').length;
+  const net     = entries.filter(e => e.outcome !== 'skip').reduce((sum, e) => sum + (e.pnl || 0), 0);
+  const streak  = calcStreak();
+
+  document.getElementById('streakVal').textContent = streak;
+  document.getElementById('winsVal').textContent   = wins + honors;
+  document.getElementById('lossesVal').textContent = losses;
+
+  const netEl = document.getElementById('netPnl');
+  netEl.textContent  = (net >= 0 ? '+' : '') + fmt(net);
+  netEl.className    = 'stat-value' + (net >= 0 ? '' : ' red');
+}
+
+function renderLogList() {
+  const el = document.getElementById('logList');
+  const sorted = Object.entries(logs)
+    .sort((a, b) => b[0].localeCompare(a[0]))
+    .slice(0, 20);
+
+  if (sorted.length === 0) {
+    el.innerHTML = '<div class="empty-log">No entries yet.<br>Click any day on the calendar to log a trade.</div>';
+    return;
+  }
+
+  el.innerHTML = sorted.map(([date, entry]) => {
+    const pnl = entry.pnl || 0;
+    const pnlStr = (pnl >= 0 ? '+' : '') + fmt(Math.abs(pnl));
+    const pnlCls = pnl >= 0 ? 'pos' : 'neg';
+    const badgeMap = { win: 'WIN', honor: 'HONORED', loss: 'LOSS', skip: 'REST' };
+    return `<div class="log-item" onclick="openModal('${date}')">
+      <span class="log-item-date">${fmtDate(date)}</span>
+      <span class="log-item-pnl ${pnlCls}">${entry.outcome === 'skip' ? '—' : pnlStr}</span>
+      <span class="log-item-badge ${entry.outcome}">${badgeMap[entry.outcome]}</span>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════
+//  INIT
+// ══════════════════════════════
+updateCalc();
+renderCalendar();
+renderSummary();
+renderLogList();
+</script>
+</body>
+</html>
